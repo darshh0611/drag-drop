@@ -4,6 +4,8 @@ This next.js project is a drag-and-drop dashboard manager built with React and `
 
 ## Features
 
+### Frontend
+
 - **Dashboard Management**: Create, rename, delete, and reset dashboards.
 - **Widget Management**: Add, rename, delete, and rearrange widgets.
 - **Drag-and-Drop Layout**: Easily rearrange widgets using drag-and-drop functionality.
@@ -11,12 +13,32 @@ This next.js project is a drag-and-drop dashboard manager built with React and `
 - **Auto-Save**: Automatically saves changes to the dashboard.
 - **API Integration**: Fetches and saves dashboard data via a REST API.
 
+### Backend
+
+- **REST API**: Provides endpoints for managing dashboards and widgets.
+- **Database Integration**: Uses MySQL with Sequelize ORM for data persistence.
+- **Data Models**:
+  - **Dashboard**: Represents a dashboard with layouts, widgets, and metadata.
+  - **Widget**: Represents individual widgets associated with a dashboard.
+- **Relationships**: Implements a one-to-many relationship between dashboards and widgets.
+- **Migrations**: Includes database migrations for schema management.
+- **Health Check**: Provides a `/healthz` endpoint to verify server and database connectivity.
+
 ## Technologies Used
 
-- **Frontend**: React, `react-grid-layout`, Tailwind CSS
-- **Backend**: REST API (assumed to be running on `http://localhost:4444/api`)
-- **State Management**: React Hooks
-- **HTTP Client**: Axios
+### Frontend
+
+- **React**: Component-based UI library.
+- **React Grid Layout**: For drag-and-drop widget layout management.
+- **Tailwind CSS**: Utility-first CSS framework.
+- **Axios**: HTTP client for API communication.
+
+### Backend
+
+- **Koa.js**: Lightweight Node.js framework for building APIs.
+- **Sequelize**: ORM for MySQL database interaction.
+- **MySQL**: Relational database for storing dashboards and widgets.
+- **dotenv**: For environment variable management.
 
 ## Getting Started
 
@@ -24,7 +46,15 @@ This next.js project is a drag-and-drop dashboard manager built with React and `
 
 - Node.js (v14 or higher)
 - npm or yarn
-- A running backend API (refer to the `API_BASE_URL` in the code)
+- MySQL database
+- A `.env` file with the following variables:
+  ```
+  DB_NAME=your_database_name
+  DB_USERNAME=your_database_username
+  DB_PASSWORD=your_database_password
+  DB_HOST=your_database_host
+  PORT=8081
+  ```
 
 ### Installation
 
@@ -34,44 +64,56 @@ This next.js project is a drag-and-drop dashboard manager built with React and `
    cd drag-drop-dashboard
    ```
 
-2. Install dependencies:
+2. Install dependencies for both frontend and backend:
    ```bash
+   cd frontend
    npm install
-   # or
-   yarn install
+   cd ../backend
+   npm install
    ```
 
-3. Start the development server:
+3. Set up the database:
+   - Create a MySQL database.
+   - Run migrations to set up the schema:
+     ```bash
+     npx sequelize-cli db:migrate
+     ```
+
+4. Start the backend server:
    ```bash
    npm start
-   # or
-   yarn start
    ```
 
-4. Open the app in your browser:
+5. Start the frontend development server:
+   ```bash
+   cd ../frontend
+   npm start
+   ```
+
+6. Open the app in your browser:
    ```
    http://localhost:3000
    ```
 
-### Backend Setup
+## Backend API Endpoints
 
-Ensure the backend API is running on `http://localhost:4444/api`. The API should support the following endpoints:
+### Dashboard Endpoints
 
-- `GET /dashboards`: Fetch all dashboards.
-- `GET /dashboards/:id`: Fetch a specific dashboard.
-- `POST /dashboards`: Create a new dashboard.
-- `PUT /dashboards/:id`: Update a dashboard.
-- `DELETE /dashboards/:id`: Delete a dashboard.
-- `POST /dashboards/:id/widgets`: Add a widget to a dashboard.
-- `PUT /dashboards/:id/widgets/:widgetId`: Update a widget in a dashboard.
+- `GET /api/dashboards`: Fetch all dashboards.
+- `GET /api/dashboards/:id`: Fetch a specific dashboard by ID.
+- `POST /api/dashboards`: Create a new dashboard.
+- `PUT /api/dashboards/:id`: Update a dashboard (e.g., name, layouts, widgets).
+- `DELETE /api/dashboards/:id`: Delete a dashboard.
 
-## Usage
+### Widget Endpoints
 
-1. **Create a Dashboard**: Click the "New Dashboard" button to create a new dashboard.
-2. **Add Widgets**: Use the buttons to add widgets like charts, tables, metrics, etc.
-3. **Customize Layout**: Drag and resize widgets to customize the layout.
-4. **Save Changes**: Changes are auto-saved, but you can manually save using the "Save Dashboard" button.
-5. **Manage Dashboards**: Rename, delete, or reset dashboards as needed.
+- `POST /api/dashboards/:id/widgets`: Add a widget to a specific dashboard.
+- `PUT /api/dashboards/:id/widgets/:widgetId`: Update a widget's details (e.g., name).
+- `DELETE /api/dashboards/:id/widgets/:widgetId`: Remove a widget from a dashboard.
+
+### Health Check
+
+- `GET /healthz`: Verify server and database connectivity.
 
 ## Contributing
 
@@ -85,4 +127,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - [React Grid Layout](https://github.com/react-grid-layout/react-grid-layout)
 - [Tailwind CSS](https://tailwindcss.com/)
+- [Koa.js](https://koajs.com/)
+- [Sequelize](https://sequelize.org/)
 - [Axios](https://axios-http.com/)
