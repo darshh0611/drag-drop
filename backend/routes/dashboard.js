@@ -149,4 +149,24 @@ router.delete("/:id", async (ctx) => {
   }
 });
 
+// Delete widget from dashboard
+router.delete("/:id/widgets/:widgetId", async (ctx) => {
+  try {
+    const { id, widgetId } = ctx.params;
+    const widget = await Widget.findOne({
+      where: { id: widgetId, dashboard_id: id },
+    });
+    if (!widget) {
+      ctx.status = 404;
+      ctx.body = { error: "Widget not found" };
+      return;
+    }
+    await widget.destroy();
+    ctx.status = 204;
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = { error: error.message };
+  }
+});
+
 module.exports = router;

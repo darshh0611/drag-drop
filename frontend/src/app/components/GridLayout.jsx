@@ -144,9 +144,7 @@ const WidgetContent = ({ type, id, widgetName, onDelete, onRename }) => {
   };
 
   return (
-    <div
-      className="w-full h-full flex flex-col"
-    >
+    <div className="w-full h-full flex flex-col">
       <div className="bg-gray-100 px-3 py-2 border-b flex justify-between items-center">
         {isEditing ? (
           <div className="flex items-center gap-2 text-amber-300">
@@ -195,6 +193,7 @@ const WidgetContent = ({ type, id, widgetName, onDelete, onRename }) => {
         )}
         <button
           className="text-gray-400 hover:text-red-500"
+          onMouseDown={(e) => e.stopPropagation()}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -650,21 +649,30 @@ export default function DashboardApp() {
 
   // Remove a widget
   const removeWidget = (id) => {
-    setWidgets((prevWidgets) =>
-      prevWidgets.filter((widget) => widget.id !== id)
-    );
-
-    setLayouts((prevLayouts) => {
-      const updatedLayouts = {};
-      Object.keys(prevLayouts).forEach((breakpoint) => {
-        if (prevLayouts[breakpoint]) {
-          updatedLayouts[breakpoint] = prevLayouts[breakpoint].filter(
-            (item) => item.i !== id
+    try {
+      console.log("Removing widget:", id);
+      const response = axios.delete(
+        `${API_BASE_URL}/dashboards/${currentDashboardId}/widgets/${id}`
+      );
+      console.log("Widget deleted:", response);
+      // Update local state
+      setWidgets((prevWidgets) =>
+        prevWidgets.filter((widget) => widget.id !== id)
+      );
+      setLayouts((prevLayouts) => {
+        const newLayouts = { ...prevLayouts };
+        Object.keys(newLayouts).forEach((breakpoint) => {
+          newLayouts[breakpoint] = newLayouts[breakpoint].filter(
+            (layout) => layout.i !== id
           );
-        }
+        });
+        return newLayouts;
       });
-      return updatedLayouts;
-    });
+      setNextId((prevId) => (prevId > 1 ? prevId - 1 : 1));
+    } catch (error) {
+      console.error("Failed to remove widget:", error);
+      alert("Failed to remove widget. Please try again.");
+    }
   };
 
   const renameWidget = async (widgetId, newName) => {
